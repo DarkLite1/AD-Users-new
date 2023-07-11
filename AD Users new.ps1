@@ -24,7 +24,10 @@ Param (
     [Parameter(Mandatory)]
     [String]$ImportFile,
     [String]$LogFolder = "$env:POWERSHELL_LOG_FOLDER\AD Reports\AD Users new\$ScriptName",
-    [String[]]$ScriptAdmin = $env:POWERSHELL_SCRIPT_ADMIN
+    [String[]]$ScriptAdmin = @(
+        $env:POWERSHELL_SCRIPT_ADMIN,
+        $env:POWERSHELL_SCRIPT_ADMIN_BACKUP
+    )
 )
 
 Begin {
@@ -72,7 +75,7 @@ Begin {
 
 Process {
     Try {
-        $NewUsers = Get-AdUserNewHC -OU $OUs -Days $Days -EA Stop
+        $NewUsers = Get-ADUserNewHC -OU $OUs -Days $Days -EA Stop
         $OUs = $OUs | ConvertTo-OuNameHC -OU | Sort-Object | ConvertTo-HtmlListHC -Header 'Organizational units:'
 
         Switch (($NewUsers | Measure-Object).Count) {
