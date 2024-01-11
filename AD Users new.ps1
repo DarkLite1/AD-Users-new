@@ -52,18 +52,18 @@ Begin {
         #endregion
 
         #region Import input file
-        $File = Get-Content $ImportFile -EA Stop | Remove-CommentsHC
+        $File = Get-Content $ImportFile -Raw -EA Stop | ConvertFrom-Json
 
-        if (-not ($MailTo = $File | Get-ValueFromArrayHC MailTo -Delimiter ',')) {
-            throw "No 'MailTo' found in the input file"
+        if (-not ($MailTo = $File.MailTo)) {
+            throw "Input file '$ImportFile': No 'MailTo' addresses found."
         }
 
-        if (-not ($OUs = $File | Get-ValueFromArrayHC -Exclude MailTo, Days)) {
-            throw 'No organizational units found in the input file'
+        if (-not ($adOUs = $File.AD.OU)) {
+            throw "Input file '$ImportFile': No 'AD.OU' found."
         }
 
-        if (-not ($Days = ($File | Get-ValueFromArrayHC Days) -as [INT])) {
-            throw 'No newer dan x days found in the input file'
+        if (-not ($Days = $File.NewerThanDays)) {
+            throw "Input file '$ImportFile': No 'NewerThanDays' found."
         }
         #endregion
     }
@@ -77,8 +77,8 @@ Begin {
 
 Process {
     Try {
-        $NewUsers = Get-ADUserNewHC -OU $OUs -Days $Days -EA Stop
-        $OUs = $OUs | ConvertTo-OuNameHC -OU | Sort-Object | ConvertTo-HtmlListHC -Header 'Organizational units:'
+        $NewUsers = Get-ADUserNewHC -OU $adOUs -Days $Days -EA Stop
+        $adOUs = $adOUs | ConvertTo-OuNameHC -OU | Sort-Object | ConvertTo-HtmlListHC -Header 'Organizational units:'
 
         Switch (($NewUsers | Measure-Object).Count) {
             '0' {
@@ -128,7 +128,7 @@ Process {
             To          = $MailTo
             Bcc         = $ScriptAdmin
             Subject     = $Subject
-            Message     = $Message, $OUs
+            Message     = $Message, $adOUs
             Attachments = $ExcelParams.Path
             LogFolder   = $LogParams.LogFolder
             Header      = $ScriptName
