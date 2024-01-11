@@ -65,6 +65,13 @@ Begin {
         if (-not ($Days = $File.NewerThanDays)) {
             throw "Input file '$ImportFile': No 'NewerThanDays' found."
         }
+
+        try {
+            [int]$Days
+        }
+        catch {
+            throw "Property 'NewerThanDays' needs to be a number, the value '$NewerThanDays' is not supported."
+        }
         #endregion
     }
     Catch {
