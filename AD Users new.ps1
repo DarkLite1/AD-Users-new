@@ -87,7 +87,7 @@ Begin {
 Process {
     Try {
         $NewUsers = Get-ADUserNewHC -OU $adOUs -Days $Days -EA Stop
-        $adOUs = $adOUs | ConvertTo-OuNameHC -OU | Sort-Object | ConvertTo-HtmlListHC -Header 'Organizational units:'
+        $adOUsHtml = $adOUs | ConvertTo-OuNameHC -OU | Sort-Object | ConvertTo-HtmlListHC -Header 'Organizational units:'
 
         Switch (($NewUsers | Measure-Object).Count) {
             '0' {
@@ -112,11 +112,21 @@ Process {
                 TableName     = "Users"
                 WorkSheetName = "New users last $Days days"
             }
-            $NewUsers | Export-Excel @ExcelParams -NoNumberConversion 'Employee ID', 'OfficePhone', 'HomePhone', 'MobilePhone', 'ipPhone', 'Fax', 'Pager'
+            $NewUsers | Export-Excel @ExcelParams -NoNumberConversion @(
+                'Employee ID', 'OfficePhone', 'HomePhone', 'MobilePhone',
+                'ipPhone', 'Fax', 'Pager'
+            )
 
             $Table = $NewUsers | Group-Object Country |
-            Select-Object @{Name = "Country"; Expression = { $_.Name } },
-            @{Name = "Total"; Expression = { $_.Count } } | Sort-Object Count -Descending |
+            Select-Object @{
+                Name       = "Country"
+                Expression = { $_.Name }
+            },
+            @{
+                Name       = "Total"
+                Expression = { $_.Count }
+            } |
+            Sort-Object Count -Descending |
             ConvertTo-Html -As Table -Fragment
 
             $Message = "$Intro
@@ -137,7 +147,7 @@ Process {
             To          = $MailTo
             Bcc         = $ScriptAdmin
             Subject     = $Subject
-            Message     = $Message, $adOUs
+            Message     = $Message, $adOUsHtml
             Attachments = $ExcelParams.Path
             LogFolder   = $LogParams.LogFolder
             Header      = $ScriptName
