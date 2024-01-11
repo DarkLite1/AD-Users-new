@@ -1,0 +1,11 @@
+{
+  "MailTo": ["bob@contoso.com"],
+  "NewerThanDays": 7,
+  "AD": {
+    "OU": [
+      "OU=BEL,OU=EU,DC=contoso,DC=com",
+      "OU=LUX,OU=EU,DC=contoso,DC=com",
+      "OU=NLD,OU=EU,DC=contoso,DC=com"
+    ]
+  }
+}
