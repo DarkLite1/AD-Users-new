@@ -5,16 +5,18 @@
 
 <#
     .SYNOPSIS
-        Create a list of all the user accounts that have been created within the last x days within the active directory.
+        Create a list of all the user accounts that have been created in the
+        last x days within the active directory.
 
     .DESCRIPTION
-        This script is designed to run as a scheduled task and will check for new users created in the Active Directory. The result will be mailed and saved as an HTML file on a share.
+        The active directory is scanned for the last created users. An e-mail
+        is sent with an Excel file in attachment containing the results.
 
-    .PARAMETER Days
-        Users created in the last 'x Days' is what we look for.
+    .PARAMETER ImportFile
+        A .json file containing the script arguments.
 
-    .PARAMETER OUs
-        The organization units where we look for new users.
+    .PARAMETER LogFolder
+        Location for the log files.
 #>
 
 [CmdletBinding()]
