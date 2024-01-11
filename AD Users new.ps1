@@ -3,8 +3,8 @@
 #Requires -Modules Toolbox.ActiveDirectory, Toolbox.HTML, Toolbox.EventLog
 #Requires -Modules Toolbox.Remoting
 
-<# 
-    .SYNOPSIS   
+<#
+    .SYNOPSIS
         Script to create a report about all the new users created in the AD.
 
     .DESCRIPTION
@@ -51,6 +51,7 @@ Begin {
         }
         #endregion
 
+        #region Import input file
         $File = Get-Content $ImportFile -EA Stop | Remove-CommentsHC
 
         if (-not ($MailTo = $File | Get-ValueFromArrayHC MailTo -Delimiter ',')) {
@@ -64,6 +65,7 @@ Begin {
         if (-not ($Days = ($File | Get-ValueFromArrayHC Days) -as [INT])) {
             throw 'No newer dan x days found in the input file'
         }
+        #endregion
     }
     Catch {
         Write-Warning $_
@@ -103,9 +105,9 @@ Process {
             }
             $NewUsers | Export-Excel @ExcelParams -NoNumberConversion 'Employee ID', 'OfficePhone', 'HomePhone', 'MobilePhone', 'ipPhone', 'Fax', 'Pager'
 
-            $Table = $NewUsers | Group-Object Country | 
-            Select-Object @{Name = "Country"; Expression = { $_.Name } }, 
-            @{Name = "Total"; Expression = { $_.Count } } | Sort-Object Count -Descending | 
+            $Table = $NewUsers | Group-Object Country |
+            Select-Object @{Name = "Country"; Expression = { $_.Name } },
+            @{Name = "Total"; Expression = { $_.Count } } | Sort-Object Count -Descending |
             ConvertTo-Html -As Table -Fragment
 
             $Message = "$Intro
@@ -117,7 +119,7 @@ Process {
                             else{$_.'Account expires'.ToString('dd/MM/yyyy')}}} |
                             ConvertTo-Html -Fragment -As Table)
                         <p><i>* Check the attachment(s) for details</i></p>"
-        } 
+        }
         else {
             $Message = $Intro
         }
