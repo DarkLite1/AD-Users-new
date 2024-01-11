@@ -1,7 +1,6 @@
 ﻿#Requires -Version 5.1
 #Requires -Modules ActiveDirectory, ImportExcel
 #Requires -Modules Toolbox.ActiveDirectory, Toolbox.HTML, Toolbox.EventLog
-#Requires -Modules Toolbox.Remoting
 
 <#
     .SYNOPSIS
