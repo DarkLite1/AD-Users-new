@@ -5,7 +5,7 @@
 
 <#
     .SYNOPSIS
-        Script to create a report about all the new users created in the AD.
+        Create a list of all the user accounts that have been created within the last x days within the active directory.
 
     .DESCRIPTION
         This script is designed to run as a scheduled task and will check for new users created in the Active Directory. The result will be mailed and saved as an HTML file on a share.
